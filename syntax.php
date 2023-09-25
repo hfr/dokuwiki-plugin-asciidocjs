@@ -1,7 +1,5 @@
 <?php
 
-use dokuwiki\Extension\SyntaxPlugin;
-
 /**
  * Plugin asciidocjs - Use asciidoc inside dokuwiki
  *
@@ -10,6 +8,8 @@ use dokuwiki\Extension\SyntaxPlugin;
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Rüdiger Kessel  <ruediger.kessel@gmail.com>
  */
+
+use dokuwiki\Extension\SyntaxPlugin;
 
 // phpcs:disable
 if (!defined('DOKU_INC')) die();

@@ -1,15 +1,15 @@
 <?php
 
-use dokuwiki\Extension\ActionPlugin;
-use dokuwiki\Extension\EventHandler;
-use dokuwiki\Extension\Event;
-
 /**
  * Plugin asciidocjs - Use asciidoc inside dokuwiki
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Rüdiger Kessel  <ruediger.kessel@gmail.com>
  */
+
+use dokuwiki\Extension\ActionPlugin;
+use dokuwiki\Extension\EventHandler;
+use dokuwiki\Extension\Event;
 
 // phpcs:disable
 if (!defined('DOKU_INC')) {
@@ -31,7 +31,8 @@ class action_plugin_asciidocjs extends ActionPlugin
 
     public function loadasciidocjs(Event $event, $param)
     {
-        $event->data['script'][] = ['charset' => 'utf-8', 'defer' => "defer", 'src' => DOKU_BASE . "lib/plugins/asciidocjs/node_modules/@asciidoctor/core/dist/browser/asciidoctor.js"];
+        $event->data['script'][] = ['charset' => 'utf-8', 'defer' => "defer", 'src' => DOKU_BASE .
+          "lib/plugins/asciidocjs/node_modules/@asciidoctor/core/dist/browser/asciidoctor.js"];
 
         $event->data['script'][] = ['charset' => 'utf-8', 'defer' => "defer", 'src' => DOKU_BASE .
           "lib/plugins/asciidocjs/node_modules/asciidoctor-kroki/dist/browser/asciidoctor-kroki.js"];
