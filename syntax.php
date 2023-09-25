@@ -1,66 +1,71 @@
 <?php
+
 /**
  * Plugin asciidocjs - Use asciidoc inside dokuwiki
- * 
+ *
  * To be run with Dokuwiki only
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Rüdiger Kessel  <ruediger.kessel@gmail.com>
  */
-if(!defined('DOKU_INC')) die();
-if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
-     
+
+if (!defined('DOKU_INC')) die();
+if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
+
     /**
      * All DokuWiki plugins to extend the parser/rendering mechanism
      * need to inherit from this class
      */
-    class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin {
-     
-     
-       public $scriptid = 0;
-       /**
-        * Get the type of syntax this plugin defines.
-        *
-        * @param none
-        * @return String <tt>'substition'</tt> (i.e. 'substitution').
-        * @public
-        * @static
-        */
-        function getType(){
-            return 'protected';
-        }
-     
-       /**
-        * Where to sort in?
-        *
-        * @param none
-        * @return Integer <tt>6</tt>.
-        * @public
-        * @static
-        */
-        function getSort(){
-            return 1;
-        }
-     
-     
-       /**
-        * Connect lookup pattern to lexer.
-        *
-        * @param $aMode String The desired rendermode.
-        * @return none
-        * @public
-        * @see render()
-        */
-        function connectTo($mode) {
-          $this->Lexer->addEntryPattern('<asciidoc>',$mode,'plugin_asciidocjs');
-          $this->Lexer->addEntryPattern('//--asciidoc--//',$mode,'plugin_asciidocjs');
-        }
-     
-       function postConnect() {
-          $this->Lexer->addExitPattern('</asciidoc>','plugin_asciidocjs');
-        }
-     
-   
+class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
+{
+    public public $scriptid = 0;
+   /**
+    * Get the type of syntax this plugin defines.
+    *
+    * @param none
+    * @return String <tt>'substition'</tt> (i.e. 'substitution').
+    * @public
+    * @static
+    */
+    public function getType()
+    {
+        return 'protected';
+    }
+
+   /**
+    * Where to sort in?
+    *
+    * @param none
+    * @return Integer <tt>6</tt>.
+    * @public
+    * @static
+    */
+    public function getSort()
+    {
+        return 1;
+    }
+
+
+   /**
+    * Connect lookup pattern to lexer.
+    *
+    * @param $aMode String The desired rendermode.
+    * @return none
+    * @public
+    * @see render()
+    */
+    public function connectTo($mode)
+    {
+        $this->Lexer->addEntryPattern('<asciidoc>', $mode, 'plugin_asciidocjs');
+        $this->Lexer->addEntryPattern('//--asciidoc--//', $mode, 'plugin_asciidocjs');
+    }
+
+    public function postConnect()
+    {
+          $this->Lexer->addExitPattern('</asciidoc>', 'plugin_asciidocjs');
+    }
+
+
        /**
         * Handler to prepare matched data for the rendering process.
         *
@@ -70,46 +75,47 @@ if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
         * </p>
         * @param $aAscdoc String The asciidoc text to convert.
         */
-       function run_asciidoctor($node,$ascdoc,$save_mode) {
-           if ($node==''){
-               return '<!-- ascii-doc no node command -->';
-           }
-           $html = '';
-           $return_value = 1;       
-           $descriptorspec = array(
-               0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
-               1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-               2 => array("pipe", "w")   // stderr
-           );
-           $cwd = DOKU_PLUGIN.'asciidocjs';
-           $env = array();
-           $CMD=$node." asciidoc.js ".$save_mode;
-           $process = proc_open($CMD, $descriptorspec, $pipes, $cwd, $env);
-           if (is_resource($process)) {
-               // $pipes now looks like this:
-               // 0 => writeable handle connected to child stdin
-               // 1 => readable handle connected to child stdout
-               // Any error output will be appended to /tmp/error-output.txt
+    public function runAsciidoctor($node, $ascdoc, $save_mode)
+    {
+        if ($node == '') {
+            return '<!-- ascii-doc no node command -->';
+        }
+        $html = '';
+        $return_value = 1;
+        $descriptorspec = array(
+           0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+           1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+           2 => array("pipe", "w")   // stderr
+        );
+        $cwd = DOKU_PLUGIN . 'asciidocjs';
+        $env = array();
+        $CMD = $node . " asciidoc.js " . $save_mode;
+        $process = proc_open($CMD, $descriptorspec, $pipes, $cwd, $env);
+        if (is_resource($process)) {
+            // $pipes now looks like this:
+            // 0 => writeable handle connected to child stdin
+            // 1 => readable handle connected to child stdout
+            // Any error output will be appended to /tmp/error-output.txt
 
-               fwrite($pipes[0],$ascdoc);
-               fclose($pipes[0]);
+            fwrite($pipes[0], $ascdoc);
+            fclose($pipes[0]);
 
-               $html=stream_get_contents($pipes[1]);
-               fclose($pipes[1]);
+            $html = stream_get_contents($pipes[1]);
+            fclose($pipes[1]);
 
-               $error=stream_get_contents($pipes[2]);
-               fclose($pipes[2]);
+            $error = stream_get_contents($pipes[2]);
+            fclose($pipes[2]);
 
-               // It is important that you close any pipes before calling
-               // proc_close in order to avoid a deadlock
-               $return_value = proc_close($process);
-           }           
-           if ($return_value==0) {
-               return $html;
-           } else {
-               return "<!-- ascii-doc error $return_value: $error -->";
-           }
-       }  
+            // It is important that you close any pipes before calling
+            // proc_close in order to avoid a deadlock
+            $return_value = proc_close($process);
+        }
+        if ($return_value == 0) {
+            return $html;
+        } else {
+            return "<!-- ascii-doc error $return_value: $error -->";
+        }
+    }
        /**
         * Handler to prepare matched data for the rendering process.
         *
@@ -139,44 +145,47 @@ if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
         * @see render()
         * @static
         */
-        function handle($match, $state, $pos, Doku_Handler $handler){
-            switch ($state) {
-              case DOKU_LEXER_ENTER : 
-                $data ='';
-                if ($this->scriptid==0){
-                  $data .= '<script type="module" src="'.DOKU_BASE.'lib/plugins/asciidocjs/asciidoc.js'.'" defer></script>'.PHP_EOL;
-                  $data .= '<script type="text/javascript">'.PHP_EOL;
-                  $data .= 'save_mode="'.$this->getConf('save_mode').'";</script>'.PHP_EOL;
+    public function handle($match, $state, $pos, Doku_Handler $handler)
+    {
+        switch ($state) {
+            case DOKU_LEXER_ENTER:
+                $data = '';
+                if ($this->scriptid == 0) {
+                    $data .= '<script type="module"';
+                    $data .= ' src="' . DOKU_BASE . 'lib/plugins/asciidocjs/asciidoc.js' . '" defer></script>' . PHP_EOL;
+                    $data .= '<script type="text/javascript">' . PHP_EOL;
+                    $data .= 'save_mode="' . $this->getConf('save_mode') . '";</script>' . PHP_EOL;
                 }
                 return array($state, $data, '');
-              case DOKU_LEXER_MATCHED :
+            case DOKU_LEXER_MATCHED:
                 break;
-              case DOKU_LEXER_UNMATCHED :
-                $data ='';
-                if ($this->getConf('save_mode')=='server'){
-                  $data.='<!-- ascii-doc start -->';
-                  $data.=$this->run_asciidoctor($this->getConf('exec_node'),$match,$this->getConf('save_mode'));
-                  $data.='<!-- ascii-doc end -->';
-                } else {   
-                  $SID="asciidoc_c".strval($this->scriptid);
-                  $DID="asciidoc_t".strval($this->scriptid);
-                  $this->scriptid+=1;
-                  $data.='<div id="'.$DID.'"></div>'.PHP_EOL;
-                  $data.='<script type="text/javascript">if (typeof asciidocs === "undefined") asciidocs=[];'.PHP_EOL;
-                  $data.='asciidocs.push({"SID":"'.$SID.'","DID":"'.$DID.'"});</script>'.PHP_EOL;
-                  $data.='<script id="'.$SID.'" type="text/json">';
-                  $data.='{"text":'.json_encode($match).'}';
-                  $data.='</script>';
+            case DOKU_LEXER_UNMATCHED:
+                $data = '';
+                if ($this->getConf('save_mode') == 'server') {
+                    $data .= '<!-- ascii-doc start -->';
+                    $data .= $this->run_asciidoctor($this->getConf('exec_node'), $match, $this->getConf('save_mode'));
+                    $data .= '<!-- ascii-doc end -->';
+                } else {
+                    $SID = "asciidoc_c" . strval($this->scriptid);
+                    $DID = "asciidoc_t" . strval($this->scriptid);
+                    $this->scriptid += 1;
+                    $data .= '<div id="' . $DID . '"></div>' . PHP_EOL;
+                    $data .= '<script type="text/javascript">';
+                    $data .= 'if (typeof asciidocs === "undefined") asciidocs=[];' . PHP_EOL;
+                    $data .= 'asciidocs.push({"SID":"' . $SID . '","DID":"' . $DID . '"});</script>' . PHP_EOL;
+                    $data .= '<script id="' . $SID . '" type="text/json">';
+                    $data .= '{"text":' . json_encode($match) . '}';
+                    $data .= '</script>';
                 }
-                return array($state, $data, $match); 
-              case DOKU_LEXER_EXIT :
+                return array($state, $data, $match);
+            case DOKU_LEXER_EXIT:
                 return array($state, '', '');
-              case DOKU_LEXER_SPECIAL :
+            case DOKU_LEXER_SPECIAL:
                 break;
-            }
-            return array();
         }
-     
+        return array();
+    }
+
        /**
         * Handle the actual output creation.
         *
@@ -196,20 +205,23 @@ if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
         * @public
         * @see handle()
         */
-        function render($mode, Doku_Renderer $renderer, $data) {
-            if($mode == 'xhtml'){
-                if(is_a($renderer,'renderer_plugin_dw2pdf')){
-                  // this is the PDF export, render simple HTML here
-                  $renderer->doc .= $this->run_asciidoctor($this->getConf('exec_node'),$data[2],$this->getConf('save_mode'));  
-                }else{
-                  // this is normal XHTML for Browsers, be fancy here
-                    $renderer->doc .= $data[1];
-                }
-                return true;
+    public function render($mode, Doku_Renderer $renderer, $data)
+    {
+        if ($mode == 'xhtml') {
+            if (is_a($renderer, 'renderer_plugin_dw2pdf')) {
+              // this is the PDF export, render simple HTML here
+                $renderer->doc .=
+                  $this->run_asciidoctor(
+                      $this->getConf('exec_node'),
+                      $data[2],
+                      $this->getConf('save_mode')
+                  );
+            } else {
+              // this is normal XHTML for Browsers, be fancy here
+                $renderer->doc .= $data[1];
             }
-            return false;
+            return true;
         }
+        return false;
     }
-
-?>
-
+}

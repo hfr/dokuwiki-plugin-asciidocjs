@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Default settings for the asciidocjs plugin
  *
@@ -8,4 +9,3 @@
 $conf['save_mode']    = 'server';
 $conf['adoc2html']    = 'browser';
 $conf['exec_node']    = 'node';
-
