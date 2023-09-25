@@ -1,6 +1,6 @@
 name: DokuWiki Default Tasks
+permissions: read-all|write-all
 on:
-  permissions: read-all|write-all
   push:
   pull_request:
   schedule:
