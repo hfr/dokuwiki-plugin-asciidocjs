@@ -153,22 +153,22 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
             case DOKU_LEXER_ENTER:
                 $data = '';
                 if ($this->getConf('adoc2html') != 'server') {
-                  if ($this->scriptid == 0) {
-                    $data .= '<script type="module">';
-                    $data .= 'var save_mode="' . $this->getConf('save_mode') . '";' . PHP_EOL;
-                    $data .= 'jQuery( function() {' . PHP_EOL;
-                    $data .= 'var asciidoctor = Asciidoctor();' . PHP_EOL;
-                    $data .= 'const registry = asciidoctor.Extensions.create();' . PHP_EOL;
-                    $data .= 'AsciidoctorKroki.register(registry);' . PHP_EOL;
-                    $data .= 'for (let i = 0; i < asciidocs.length; i++) {' . PHP_EOL;
-                    $data .= 'var json = document.getElementById(asciidocs[i]["SID"]).textContent;' . PHP_EOL;
-                    $data .= 'var target = document.getElementById(asciidocs[i]["DID"]);' . PHP_EOL;
-                    $data .= 'var doc = JSON.parse(json);' . PHP_EOL;
-                    $data .= 'var html = asciidoctor.convert(doc.text, ' . PHP_EOL;
-                    $data .= '  {safe: save_mode, header_footer: false, extension_registry: registry});' . PHP_EOL;
-                    $data .= 'target.innerHTML = html;}});' . PHP_EOL;
-                    $data .= '</script>' . PHP_EOL;
-                  }
+                    if ($this->scriptid == 0) {
+                        $data .= '<script type="module">';
+                        $data .= 'var save_mode="' . $this->getConf('save_mode') . '";' . PHP_EOL;
+                        $data .= 'jQuery( function() {' . PHP_EOL;
+                        $data .= 'var asciidoctor = Asciidoctor();' . PHP_EOL;
+                        $data .= 'const registry = asciidoctor.Extensions.create();' . PHP_EOL;
+                        $data .= 'AsciidoctorKroki.register(registry);' . PHP_EOL;
+                        $data .= 'for (let i = 0; i < asciidocs.length; i++) {' . PHP_EOL;
+                        $data .= 'var json = document.getElementById(asciidocs[i]["SID"]).textContent;' . PHP_EOL;
+                        $data .= 'var target = document.getElementById(asciidocs[i]["DID"]);' . PHP_EOL;
+                        $data .= 'var doc = JSON.parse(json);' . PHP_EOL;
+                        $data .= 'var html = asciidoctor.convert(doc.text, ' . PHP_EOL;
+                        $data .= '  {safe: save_mode, header_footer: false, extension_registry: registry});' . PHP_EOL;
+                        $data .= 'target.innerHTML = html;}});' . PHP_EOL;
+                        $data .= '</script>' . PHP_EOL;
+                    }
                 }
                 return array($state, $data, '');
             case DOKU_LEXER_MATCHED:
