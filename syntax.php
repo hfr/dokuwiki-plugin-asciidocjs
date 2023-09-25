@@ -1,5 +1,7 @@
 <?php
 
+use dokuwiki\Extension\SyntaxPlugin;
+
 /**
  * Plugin asciidocjs - Use asciidoc inside dokuwiki
  *
@@ -18,7 +20,7 @@ if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
      * All DokuWiki plugins to extend the parser/rendering mechanism
      * need to inherit from this class
      */
-class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
+class syntax_plugin_asciidocjs extends SyntaxPlugin
 {
     public $scriptid = 0;
    /**
@@ -84,13 +86,15 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
         }
         $html = '';
         $return_value = 1;
-        $descriptorspec = array(
-           0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
-           1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-           2 => array("pipe", "w")   // stderr
-        );
+        $descriptorspec = [
+            0 => ["pipe", "r"],
+            // stdin is a pipe that the child will read from
+            1 => ["pipe", "w"],
+            // stdout is a pipe that the child will write to
+            2 => ["pipe", "w"],
+        ];
         $cwd = DOKU_PLUGIN . 'asciidocjs';
-        $env = array();
+        $env = [];
         $CMD = $node . " asciidoc.js " . $save_mode;
         $process = proc_open($CMD, $descriptorspec, $pipes, $cwd, $env);
         if (is_resource($process)) {
@@ -170,7 +174,7 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
                         $data .= '</script>' . PHP_EOL;
                     }
                 }
-                return array($state, $data, '');
+                return [$state, $data, ''];
             case DOKU_LEXER_MATCHED:
                 break;
             case DOKU_LEXER_UNMATCHED:
@@ -179,9 +183,9 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
                 if ($this->getConf('adoc2html') == 'server') {
                     $data .= $this->runAsciidoctor($this->getConf('exec_node'), $match, $this->getConf('save_mode'));
                 } else {
-                    $SID = "asciidoc_c" . strval($this->scriptid);
-                    $DID = "asciidoc_t" . strval($this->scriptid);
-                    $this->scriptid += 1;
+                    $SID = "asciidoc_c" . $this->scriptid;
+                    $DID = "asciidoc_t" . $this->scriptid;
+                    ++$this->scriptid;
                     $data .= '<div id="' . $DID . '"></div>' . PHP_EOL;
                     $data .= '<script type="text/javascript">';
                     $data .= 'if (typeof asciidocs === "undefined") asciidocs=[];' . PHP_EOL;
@@ -191,13 +195,13 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
                     $data .= '</script>' . PHP_EOL;
                 }
                 $data .= '<!-- ascii-doc end -->' . PHP_EOL;
-                return array($state, $data, $match);
+                return [$state, $data, $match];
             case DOKU_LEXER_EXIT:
-                return array($state, '', '');
+                return [$state, '', ''];
             case DOKU_LEXER_SPECIAL:
                 break;
         }
-        return array();
+        return [];
     }
 
        /**

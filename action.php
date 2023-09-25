@@ -1,5 +1,9 @@
 <?php
 
+use dokuwiki\Extension\ActionPlugin;
+use dokuwiki\Extension\EventHandler;
+use dokuwiki\Extension\Event;
+
 /**
  * Plugin asciidocjs - Use asciidoc inside dokuwiki
  *
@@ -13,9 +17,9 @@ if (!defined('DOKU_INC')) {
 }
 // phpcs:enable
 
-class action_plugin_asciidocjs extends DokuWiki_Action_Plugin
+class action_plugin_asciidocjs extends ActionPlugin
 {
-    public function register(Doku_Event_Handler $controller)
+    public function register(EventHandler $controller)
     {
         $controller->register_hook(
             'TPL_METAHEADER_OUTPUT',
@@ -25,23 +29,14 @@ class action_plugin_asciidocjs extends DokuWiki_Action_Plugin
         );
     }
 
-    public function loadasciidocjs(Doku_Event $event, $param)
+    public function loadasciidocjs(Event $event, $param)
     {
-        $event->data['script'][] = array(
-            'charset' => 'utf-8',
-            'defer' => "defer",
-            'src' => DOKU_BASE . "lib/plugins/asciidocjs/node_modules/@asciidoctor/core/dist/browser/asciidoctor.js");
+        $event->data['script'][] = ['charset' => 'utf-8', 'defer' => "defer", 'src' => DOKU_BASE . "lib/plugins/asciidocjs/node_modules/@asciidoctor/core/dist/browser/asciidoctor.js"];
 
-        $event->data['script'][] = array(
-            'charset' => 'utf-8',
-            'defer' => "defer",
-            'src' => DOKU_BASE .
-              "lib/plugins/asciidocjs/node_modules/asciidoctor-kroki/dist/browser/asciidoctor-kroki.js");
+        $event->data['script'][] = ['charset' => 'utf-8', 'defer' => "defer", 'src' => DOKU_BASE .
+          "lib/plugins/asciidocjs/node_modules/asciidoctor-kroki/dist/browser/asciidoctor-kroki.js"];
 
-        $event->data['link'][] = array (
-            'rel'  => 'stylesheet',
-            'type' => 'text/css',
-            'href' => DOKU_BASE .
-                "lib/plugins/asciidocjs/node_modules/@asciidoctor/core/dist/css/asciidoctor.css");
+        $event->data['link'][] = ['rel'  => 'stylesheet', 'type' => 'text/css', 'href' => DOKU_BASE .
+            "lib/plugins/asciidocjs/node_modules/@asciidoctor/core/dist/css/asciidoctor.css"];
     }
 }
