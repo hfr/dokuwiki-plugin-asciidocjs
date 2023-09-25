@@ -27,6 +27,16 @@ class action_plugin_asciidocjs extends DokuWiki_Action_Plugin
 
     public function loadasciidocjs(Doku_Event $event, $param)
     {
+        $event->data['script'][] = array(
+            'charset' => 'utf-8',
+            'defer' =>"defer",
+            'src' => DOKU_BASE."lib/plugins/asciidocjs/node_modules/@asciidoctor/core/dist/browser/asciidoctor.js");
+
+        $event->data['script'][] = array(
+            'charset' => 'utf-8',
+            'defer' =>"defer",
+            'src' => DOKU_BASE."lib/plugins/asciidocjs/node_modules/asciidoctor-kroki/dist/browser/asciidoctor-kroki.js");
+
         $event->data['link'][] = array (
             'rel'     => 'stylesheet',
             'type'    => 'text/css',

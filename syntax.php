@@ -80,7 +80,7 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
     public function runAsciidoctor($node, $ascdoc, $save_mode)
     {
         if ($node == '') {
-            return '<!-- ascii-doc no node command -->';
+            return '<!-- ascii-doc no node command -->' . PHP_EOL;
         }
         $html = '';
         $return_value = 1;
@@ -113,9 +113,9 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
             $return_value = proc_close($process);
         }
         if ($return_value == 0) {
-            return $html;
+            return $html . PHP_EOL;
         } else {
-            return "<!-- ascii-doc error $return_value: $error -->";
+            return "<!-- ascii-doc error $return_value: $error -->" . PHP_EOL;
         }
     }
        /**
@@ -152,22 +152,32 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
         switch ($state) {
             case DOKU_LEXER_ENTER:
                 $data = '';
-                if ($this->scriptid == 0) {
-                    $data .= '<script type="module"';
-                    $data .= ' src="' . DOKU_BASE . 'lib/plugins/asciidocjs/asciidoc.js" defer>';
+                if ($this->getConf('adoc2html') != 'server') {
+                  if ($this->scriptid == 0) {
+                    $data .= '<script type="module">';
+                    $data .= 'var save_mode="' . $this->getConf('save_mode') . '";' . PHP_EOL;
+                    $data .= 'jQuery( function() {';
+                    $data .= 'var asciidoctor = Asciidoctor();';
+                    $data .= 'const registry = asciidoctor.Extensions.create();';
+                    $data .= 'AsciidoctorKroki.register(registry);';
+                    $data .= 'for (let i = 0; i < asciidocs.length; i++) {';
+                    $data .= 'var json = document.getElementById(asciidocs[i]["SID"]).textContent;';
+                    $data .= 'var target = document.getElementById(asciidocs[i]["DID"]);';
+                    $data .= 'var doc = JSON.parse(json);';
+                    $data .= 'var html = asciidoctor.convert(doc.text, ';
+                    $data .= '            {safe: save_mode, header_footer: false, extension_registry: registry});';
+                    $data .= '        target.innerHTML = html;}});';
                     $data .= '</script>' . PHP_EOL;
-                    $data .= '<script type="text/javascript">' . PHP_EOL;
-                    $data .= 'save_mode="' . $this->getConf('save_mode') . '";</script>' . PHP_EOL;
+                  }
                 }
                 return array($state, $data, '');
             case DOKU_LEXER_MATCHED:
                 break;
             case DOKU_LEXER_UNMATCHED:
                 $data = '';
-                if ($this->getConf('save_mode') == 'server') {
-                    $data .= '<!-- ascii-doc start -->';
+                $data .= '<!-- ascii-doc start -->' . PHP_EOL;
+                if ($this->getConf('adoc2html') == 'server') {
                     $data .= $this->runAsciidoctor($this->getConf('exec_node'), $match, $this->getConf('save_mode'));
-                    $data .= '<!-- ascii-doc end -->';
                 } else {
                     $SID = "asciidoc_c" . strval($this->scriptid);
                     $DID = "asciidoc_t" . strval($this->scriptid);
@@ -178,8 +188,9 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
                     $data .= 'asciidocs.push({"SID":"' . $SID . '","DID":"' . $DID . '"});</script>' . PHP_EOL;
                     $data .= '<script id="' . $SID . '" type="text/json">';
                     $data .= '{"text":' . json_encode($match) . '}';
-                    $data .= '</script>';
+                    $data .= '</script>' . PHP_EOL;
                 }
+                $data .= '<!-- ascii-doc end -->' . PHP_EOL;
                 return array($state, $data, $match);
             case DOKU_LEXER_EXIT:
                 return array($state, '', '');

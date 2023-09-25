@@ -1,6 +1,8 @@
-import Asciidoctor from "./node_modules/@asciidoctor/core/dist/browser/asciidoctor.js";
-
-try {  
+import * as ASCIIDOC from "./node_modules/@asciidoctor/core/dist/browser/asciidoctor.js";
+const Asciidoctor=ASCIIDOC.default;
+import * as KROKI from "./node_modules/asciidoctor-kroki/dist/browser/asciidoctor-kroki.js";
+const AsciidoctorKroki=KROKI.default;
+try {
   var args = process.argv.slice(1);
 } catch (e) {
   var args = [];
@@ -12,28 +14,18 @@ if (args.length > 0) {
   } else {
     var save_mode = 'server';
   }
-  const asciidoctor = Asciidoctor()
+  const asciidoctor = Asciidoctor();
+  const registry = asciidoctor.Extensions.create();
+  AsciidoctorKroki.register(registry);
   async function doinput() {
     var data = "";
     for await (const chunk of process.stdin) {data += chunk;}
     return data;
   }
   var doc=await doinput();
-//  process.stdout.write(doc);
-  var html = asciidoctor.convert(doc, {safe: save_mode, header_footer: false});
+  var html = asciidoctor.convert(doc, 
+      {safe: save_mode, header_footer: false, extension_registry: registry});
   process.stdout.write(html);
-} else {
-  jQuery( function() {
-    var asciidoctor = Asciidoctor();
-    for (let i = 0; i < asciidocs.length; i++) {
-      var json = document.getElementById(asciidocs[i]["SID"]).textContent;
-      var target = document.getElementById(asciidocs[i]["DID"]);
-      var doc = JSON.parse(json);
-      var html = asciidoctor.convert(doc.text, {safe: save_mode, header_footer: false});
-      target.innerHTML = html;
-    }
-  });
-
 }
 
 
