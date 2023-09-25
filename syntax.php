@@ -166,7 +166,7 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
                 $data = '';
                 if ($this->getConf('save_mode') == 'server') {
                     $data .= '<!-- ascii-doc start -->';
-                    $data .= $this->run_asciidoctor($this->getConf('exec_node'), $match, $this->getConf('save_mode'));
+                    $data .= $this->runAsciidoctor($this->getConf('exec_node'), $match, $this->getConf('save_mode'));
                     $data .= '<!-- ascii-doc end -->';
                 } else {
                     $SID = "asciidoc_c" . strval($this->scriptid);
@@ -214,7 +214,7 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
             if (is_a($renderer, 'renderer_plugin_dw2pdf')) {
               // this is the PDF export, render simple HTML here
                 $renderer->doc .=
-                  $this->run_asciidoctor(
+                  $this->runAsciidoctor(
                       $this->getConf('exec_node'),
                       $data[2],
                       $this->getConf('save_mode')
