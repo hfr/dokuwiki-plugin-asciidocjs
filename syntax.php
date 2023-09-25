@@ -156,17 +156,17 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
                   if ($this->scriptid == 0) {
                     $data .= '<script type="module">';
                     $data .= 'var save_mode="' . $this->getConf('save_mode') . '";' . PHP_EOL;
-                    $data .= 'jQuery( function() {';
-                    $data .= 'var asciidoctor = Asciidoctor();';
-                    $data .= 'const registry = asciidoctor.Extensions.create();';
-                    $data .= 'AsciidoctorKroki.register(registry);';
-                    $data .= 'for (let i = 0; i < asciidocs.length; i++) {';
-                    $data .= 'var json = document.getElementById(asciidocs[i]["SID"]).textContent;';
-                    $data .= 'var target = document.getElementById(asciidocs[i]["DID"]);';
-                    $data .= 'var doc = JSON.parse(json);';
-                    $data .= 'var html = asciidoctor.convert(doc.text, ';
-                    $data .= '            {safe: save_mode, header_footer: false, extension_registry: registry});';
-                    $data .= '        target.innerHTML = html;}});';
+                    $data .= 'jQuery( function() {' . PHP_EOL;
+                    $data .= 'var asciidoctor = Asciidoctor();' . PHP_EOL;
+                    $data .= 'const registry = asciidoctor.Extensions.create();' . PHP_EOL;
+                    $data .= 'AsciidoctorKroki.register(registry);' . PHP_EOL;
+                    $data .= 'for (let i = 0; i < asciidocs.length; i++) {' . PHP_EOL;
+                    $data .= 'var json = document.getElementById(asciidocs[i]["SID"]).textContent;' . PHP_EOL;
+                    $data .= 'var target = document.getElementById(asciidocs[i]["DID"]);' . PHP_EOL;
+                    $data .= 'var doc = JSON.parse(json);' . PHP_EOL;
+                    $data .= 'var html = asciidoctor.convert(doc.text, ' . PHP_EOL;
+                    $data .= '  {safe: save_mode, header_footer: false, extension_registry: registry});' . PHP_EOL;
+                    $data .= 'target.innerHTML = html;}});' . PHP_EOL;
                     $data .= '</script>' . PHP_EOL;
                   }
                 }
