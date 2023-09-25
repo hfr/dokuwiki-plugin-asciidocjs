@@ -9,8 +9,10 @@
  * @author     Rüdiger Kessel  <ruediger.kessel@gmail.com>
  */
 
+// phpcs:disable
 if (!defined('DOKU_INC')) die();
 if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
+// phpcs:enable
 
     /**
      * All DokuWiki plugins to extend the parser/rendering mechanism
@@ -152,7 +154,8 @@ class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
                 $data = '';
                 if ($this->scriptid == 0) {
                     $data .= '<script type="module"';
-                    $data .= ' src="' . DOKU_BASE . 'lib/plugins/asciidocjs/asciidoc.js' . '" defer></script>' . PHP_EOL;
+                    $data .= ' src="' . DOKU_BASE . 'lib/plugins/asciidocjs/asciidoc.js" defer>';
+                    $data .= '</script>' . PHP_EOL;
                     $data .= '<script type="text/javascript">' . PHP_EOL;
                     $data .= 'save_mode="' . $this->getConf('save_mode') . '";</script>' . PHP_EOL;
                 }
