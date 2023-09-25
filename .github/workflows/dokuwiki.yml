@@ -1,4 +1,5 @@
 name: DokuWiki Default Tasks
+permissions: write-all
 on:
   push:
   pull_request:
