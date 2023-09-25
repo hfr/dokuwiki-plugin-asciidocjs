@@ -18,7 +18,7 @@ if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
      */
 class syntax_plugin_asciidocjs extends DokuWiki_Syntax_Plugin
 {
-    public public $scriptid = 0;
+    public $scriptid = 0;
    /**
     * Get the type of syntax this plugin defines.
     *
