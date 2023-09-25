@@ -39,10 +39,9 @@ class action_plugin_asciidocjs extends DokuWiki_Action_Plugin
               "lib/plugins/asciidocjs/node_modules/asciidoctor-kroki/dist/browser/asciidoctor-kroki.js");
 
         $event->data['link'][] = array (
-            'rel'     => 'stylesheet',
-            'type'    => 'text/css',
-            'href'    => DOKU_BASE .
-                "lib/plugins/asciidocjs/node_modules/@asciidoctor/core/dist/css/asciidoctor.css",
-                    );
+            'rel'  => 'stylesheet',
+            'type' => 'text/css',
+            'href' => DOKU_BASE .
+                "lib/plugins/asciidocjs/node_modules/@asciidoctor/core/dist/css/asciidoctor.css");
     }
 }
