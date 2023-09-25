@@ -30,7 +30,7 @@ class action_plugin_asciidocjs extends DokuWiki_Action_Plugin
         $event->data['link'][] = array (
             'rel'     => 'stylesheet',
             'type'    => 'text/css',
-            'href'    => DOKU_BASE . 
+            'href'    => DOKU_BASE .
                 "lib/plugins/asciidocjs/node_modules/@asciidoctor/core/dist/css/asciidoctor.css",
                     );
     }
