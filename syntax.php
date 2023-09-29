@@ -224,6 +224,7 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
     }
 }
 
+// @codingStandardsIgnoreLine
 class syntax_plugin_asciidocjs extends SyntaxPlugin_asciidocjs_base
 {
    /**
@@ -238,13 +239,14 @@ class syntax_plugin_asciidocjs extends SyntaxPlugin_asciidocjs_base
     {
         $this->Lexer->addEntryPattern('^//#--asciidoc--#//', $mode, 'plugin_asciidocjs');
     }
-    
+
     public function postConnect()
     {
           $this->Lexer->addExitPattern('^\b$', 'plugin_asciidocjs');
     }
 }
 
+// @codingStandardsIgnoreLine
 class syntax_plugin_asciidocjsblk extends SyntaxPlugin_asciidocjs_base
 {
    /**
@@ -265,4 +267,3 @@ class syntax_plugin_asciidocjsblk extends SyntaxPlugin_asciidocjs_base
           $this->Lexer->addExitPattern('</asciidoc>', 'plugin_asciidocjsblk');
     }
 }
-
