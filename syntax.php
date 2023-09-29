@@ -20,7 +20,7 @@ if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
      * All DokuWiki plugins to extend the parser/rendering mechanism
      * need to inherit from this class
      */
-class syntax_plugin_asciidocjs extends SyntaxPlugin
+class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
 {
     public $scriptid = 0;
    /**
@@ -49,36 +49,16 @@ class syntax_plugin_asciidocjs extends SyntaxPlugin
         return 1;
     }
 
-
    /**
-    * Connect lookup pattern to lexer.
+    * runAsciidoctor runs node with Asciidoctor to produce html5
     *
-    * @param $aMode String The desired rendermode.
-    * @return none
-    * @public
-    * @see render()
+    * <p>
+    * The <tt>$aAscdoc</tt> parameter gives the asciidoc source text
+    * </p>
+    * @param $aNode String Path to the node.js exe.
+    * @param $aAscdoc String The asciidoc text to convert.
+    * @param $aSave_mode String AsciiDoctor save mode for the conversion.
     */
-    public function connectTo($mode)
-    {
-        $this->Lexer->addEntryPattern('<asciidoc>', $mode, 'plugin_asciidocjs');
-        $this->Lexer->addEntryPattern('//--asciidoc--//', $mode, 'plugin_asciidocjs');
-    }
-
-    public function postConnect()
-    {
-          $this->Lexer->addExitPattern('</asciidoc>', 'plugin_asciidocjs');
-    }
-
-
-       /**
-        * Handler to prepare matched data for the rendering process.
-        *
-        * <p>
-        * The <tt>$aState</tt> parameter gives the type of pattern
-        * which triggered the call to this method:
-        * </p>
-        * @param $aAscdoc String The asciidoc text to convert.
-        */
     public function runAsciidoctor($node, $ascdoc, $save_mode)
     {
         if ($node == '') {
@@ -243,3 +223,46 @@ class syntax_plugin_asciidocjs extends SyntaxPlugin
         return false;
     }
 }
+
+class syntax_plugin_asciidocjs extends SyntaxPlugin_asciidocjs_base
+{
+   /**
+    * Connect lookup pattern to lexer.
+    *
+    * @param $aMode String The desired rendermode.
+    * @return none
+    * @public
+    * @see render()
+    */
+    public function connectTo($mode)
+    {
+        $this->Lexer->addEntryPattern('^//#--asciidoc--#//', $mode, 'plugin_asciidocjs');
+    }
+    
+    public function postConnect()
+    {
+          $this->Lexer->addExitPattern('^\b$', 'plugin_asciidocjs');
+    }
+}
+
+class syntax_plugin_asciidocjsblk extends SyntaxPlugin_asciidocjs_base
+{
+   /**
+    * Connect lookup pattern to lexer.
+    *
+    * @param $aMode String The desired rendermode.
+    * @return none
+    * @public
+    * @see render()
+    */
+    public function connectTo($mode)
+    {
+        $this->Lexer->addEntryPattern('<asciidoc>', $mode, 'plugin_asciidocjsblk');
+    }
+
+    public function postConnect()
+    {
+          $this->Lexer->addExitPattern('</asciidoc>', 'plugin_asciidocjsblk');
+    }
+}
+
