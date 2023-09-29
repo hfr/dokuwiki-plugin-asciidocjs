@@ -9,3 +9,6 @@
 $conf['save_mode']    = 'server';
 $conf['adoc2html']    = 'browser';
 $conf['exec_node']    = 'node';
+$conf['use_kroki']    = 1;
+$conf['use_css']    = 1;
+$conf['kroki_server']    = '';

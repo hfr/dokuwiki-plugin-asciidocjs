@@ -59,7 +59,7 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
     * @param $aAscdoc String The asciidoc text to convert.
     * @param $aSave_mode String AsciiDoctor save mode for the conversion.
     */
-    public function runAsciidoctor($node, $ascdoc, $save_mode)
+    public function runAsciidoctor($node, $ascdoc, $extensions, $params)
     {
         if ($node == '') {
             return '<!-- ascii-doc no node command -->' . PHP_EOL;
@@ -75,7 +75,7 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
         ];
         $cwd = DOKU_PLUGIN . 'asciidocjs';
         $env = [];
-        $CMD = $node . " asciidoc.js " . $save_mode;
+        $CMD = $node . " asciidoc.js '" .  json_encode($extensions) . "' '" . json_encode($params) . "'";
         $process = proc_open($CMD, $descriptorspec, $pipes, $cwd, $env);
         if (is_resource($process)) {
             // $pipes now looks like this:
@@ -102,6 +102,67 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
             return "<!-- ascii-doc error $return_value: $error -->" . PHP_EOL;
         }
     }
+    public function getExtensions(){
+        return array("kroki"=>$this->getConf('use_kroki'));
+    }
+    public function getParams(){
+        $params = array("safe"=>$this->getConf('save_mode'),
+                        "header_footer"=>false,
+                        "attributes"=>array(
+                            "DOKUWIKI_BASE"=>DOKU_BASE,
+                            "DOKUWIKI_URL"=>DOKU_URL
+                            )
+                       );
+            if ($this->getExtensions()["kroki"]) {
+                if ($this->getConf('kroki_server')!='') {
+                    $params["attributes"]["kroki-server-url"]=$this->getConf('kroki_server');
+                }
+            }
+        return $params;
+   }
+   public function getAscdoc2html(){
+        $data = '';
+        $extensions = $this->getExtensions();
+        $params = $this->getParams();
+        $data .= '<script type="module">'. PHP_EOL;
+        $data .= 'var extensions=' . json_encode($extensions) . ';' . PHP_EOL;
+        $data .= 'jQuery( function() {' . PHP_EOL;
+        $data .= 'var asciidoctor = Asciidoctor();' . PHP_EOL;
+        $data .= 'const registry = asciidoctor.Extensions.create();' . PHP_EOL;
+        if ($extensions["kroki"]) {
+            $data .= 'AsciidoctorKroki.register(registry);' . PHP_EOL;
+        }
+        $data .= 'registry.inlineMacro("Wikilink", function () {' . PHP_EOL;
+        $data .= '  var self = this' . PHP_EOL;
+        $data .= '  self.positionalAttributes("text");' . PHP_EOL;
+        $data .= '  self.parseContentAs("raw");' . PHP_EOL;
+        $data .= '  self.process(function (parent, target, attrs) {console.log(attrs);' . PHP_EOL;
+        $data .= '  var text=attrs.text?attrs.text:target;' . PHP_EOL;
+        $data .= '  target="'.DOKU_BASE.'doku.php?id="+target;' . PHP_EOL;
+        $data .= '    return self.createInline(parent, "anchor", text, {type: "link", target: target})' . PHP_EOL;
+        $data .= '  })' . PHP_EOL;
+        $data .= '})' . PHP_EOL;
+        $data .= 'registry.inlineMacro("Wikimedia", function () {' . PHP_EOL;
+        $data .= '  var self = this' . PHP_EOL;
+        $data .= '  self.positionalAttributes("text");' . PHP_EOL;
+        $data .= '  self.parseContentAs("raw");' . PHP_EOL;
+        $data .= '  self.process(function (parent, target, attrs) {console.log(attrs);' . PHP_EOL;
+        $data .= '  var text=attrs.text?attrs.text:target;' . PHP_EOL;
+        $data .= '  target="'.DOKU_BASE.'lib/exe/fetch.php?media="+target;' . PHP_EOL;
+        $data .= '    return self.createInline(parent, "anchor", text, {type: "link", target: target})' . PHP_EOL;
+        $data .= '  })' . PHP_EOL;
+        $data .= '})' . PHP_EOL;
+        $data .= 'var params = '.json_encode($params).';' . PHP_EOL;
+        $data .= 'params.extension_registry=registry;' . PHP_EOL;
+        $data .= 'for (let i = 0; i < asciidocs.length; i++) {' . PHP_EOL;
+        $data .= 'var json = document.getElementById(asciidocs[i]["SID"]).textContent;' . PHP_EOL;
+        $data .= 'var target = document.getElementById(asciidocs[i]["DID"]);' . PHP_EOL;
+        $data .= 'var doc = JSON.parse(json);' . PHP_EOL;
+        $data .= 'var html = asciidoctor.convert(doc.text,params);' . PHP_EOL;
+        $data .= 'target.innerHTML = html;}});' . PHP_EOL;
+        $data .= '</script>' . PHP_EOL;
+        return $data;
+   }
        /**
         * Handler to prepare matched data for the rendering process.
         *
@@ -138,20 +199,7 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
                 $data = '';
                 if ($this->getConf('adoc2html') != 'server') {
                     if ($this->scriptid == 0) {
-                        $data .= '<script type="module">';
-                        $data .= 'var save_mode="' . $this->getConf('save_mode') . '";' . PHP_EOL;
-                        $data .= 'jQuery( function() {' . PHP_EOL;
-                        $data .= 'var asciidoctor = Asciidoctor();' . PHP_EOL;
-                        $data .= 'const registry = asciidoctor.Extensions.create();' . PHP_EOL;
-                        $data .= 'AsciidoctorKroki.register(registry);' . PHP_EOL;
-                        $data .= 'for (let i = 0; i < asciidocs.length; i++) {' . PHP_EOL;
-                        $data .= 'var json = document.getElementById(asciidocs[i]["SID"]).textContent;' . PHP_EOL;
-                        $data .= 'var target = document.getElementById(asciidocs[i]["DID"]);' . PHP_EOL;
-                        $data .= 'var doc = JSON.parse(json);' . PHP_EOL;
-                        $data .= 'var html = asciidoctor.convert(doc.text, ' . PHP_EOL;
-                        $data .= '  {safe: save_mode, header_footer: false, extension_registry: registry});' . PHP_EOL;
-                        $data .= 'target.innerHTML = html;}});' . PHP_EOL;
-                        $data .= '</script>' . PHP_EOL;
+                        $data.=$this->getAscdoc2html();
                     }
                 }
                 return [$state, $data, ''];
@@ -161,7 +209,9 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
                 $data = '';
                 $data .= '<!-- ascii-doc start -->' . PHP_EOL;
                 if ($this->getConf('adoc2html') == 'server') {
-                    $data .= $this->runAsciidoctor($this->getConf('exec_node'), $match, $this->getConf('save_mode'));
+                    $extensions = $this->getExtensions();
+                    $params = $this->getParams();
+                    $data .= $this->runAsciidoctor($this->getConf('exec_node'), $match, $extensions, $params);
                 } else {
                     $SID = "asciidoc_c" . $this->scriptid;
                     $DID = "asciidoc_t" . $this->scriptid;
@@ -208,12 +258,10 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
         if ($mode == 'xhtml') {
             if (is_a($renderer, 'renderer_plugin_dw2pdf')) {
               // this is the PDF export, render simple HTML here
+                $extensions = $this->getExtensions();
+                $params = $this->getParams();
                 $renderer->doc .=
-                  $this->runAsciidoctor(
-                      $this->getConf('exec_node'),
-                      $data[2],
-                      $this->getConf('save_mode')
-                  );
+                  $this->runAsciidoctor($this->getConf('exec_node'),$data[2],$extensions,$params);
             } else {
               // this is normal XHTML for Browsers, be fancy here
                 $renderer->doc .= $data[1];
