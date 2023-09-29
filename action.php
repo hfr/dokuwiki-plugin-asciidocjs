@@ -38,7 +38,7 @@ class action_plugin_asciidocjs extends ActionPlugin
             $event->data['script'][] = ['charset' => 'utf-8', 'defer' => "defer", 'src' => DOKU_BASE .
               "lib/plugins/asciidocjs/node_modules/asciidoctor-kroki/dist/browser/asciidoctor-kroki.js"];
         }
-        
+
         if ($this->getConf('use_css')) {
             $event->data['link'][] = ['rel'  => 'stylesheet', 'type' => 'text/css', 'href' => DOKU_BASE .
                "lib/plugins/asciidocjs/node_modules/@asciidoctor/core/dist/css/asciidoctor.css"];

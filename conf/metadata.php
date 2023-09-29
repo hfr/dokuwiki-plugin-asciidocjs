@@ -12,4 +12,3 @@ $meta['adoc2html'] = array('multichoice','_choices' => array('browser','server')
 $meta['exec_node'] = array('string');
 $meta['use_kroki'] = array('onoff');
 $meta['kroki_server'] = array('string');
-
