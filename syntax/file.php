@@ -9,9 +9,9 @@
  * @author     Rüdiger Kessel  <ruediger.kessel@gmail.com>
  */
 
-// @codingStandardsIgnoreLine
+// phpcs:disable
 include_once 'base.php';
-
+// phpcs:enable
 
 class syntax_plugin_asciidocjs_file extends SyntaxPlugin_asciidocjs_base
 {
