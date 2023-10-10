@@ -125,10 +125,10 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
     public function getAscdoc2html()
     {
         $data = '';
-        $data .= '<script type="module">'. PHP_EOL;
+        $data .= '<script type="module">' . PHP_EOL;
         $data .= 'var extensions=' . json_encode($this->getExtensions()) . ';' . PHP_EOL;
-        $data .= 'var params = '.json_encode($this->getParams()).';' . PHP_EOL;
-        $data .= file_get_contents(DOKU_PLUGIN.'asciidocjs/asciidocinc.js'); 
+        $data .= 'var params = ' . json_encode($this->getParams()) . ';' . PHP_EOL;
+        $data .= file_get_contents(DOKU_PLUGIN . 'asciidocjs/asciidocinc.js');
         $data .= '</script>' . PHP_EOL;
         return $data;
     }
@@ -240,5 +240,3 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
         return false;
     }
 }
-
-
