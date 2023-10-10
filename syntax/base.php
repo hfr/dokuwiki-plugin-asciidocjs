@@ -125,44 +125,10 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
     public function getAscdoc2html()
     {
         $data = '';
-        $extensions = $this->getExtensions();
-        $params = $this->getParams();
-        $data .= '<script type="module">' . PHP_EOL;
-        $data .= 'var extensions=' . json_encode($extensions) . ';' . PHP_EOL;
-        $data .= 'jQuery( function() {' . PHP_EOL;
-        $data .= 'var asciidoctor = Asciidoctor();' . PHP_EOL;
-        $data .= 'const registry = asciidoctor.Extensions.create();' . PHP_EOL;
-        if ($extensions["kroki"]) {
-            $data .= 'AsciidoctorKroki.register(registry);' . PHP_EOL;
-        }
-        $data .= 'registry.inlineMacro("Wikilink", function () {' . PHP_EOL;
-        $data .= '  var self = this' . PHP_EOL;
-        $data .= '  self.positionalAttributes("text");' . PHP_EOL;
-        $data .= '  self.parseContentAs("raw");' . PHP_EOL;
-        $data .= '  self.process(function (parent, target, attrs) {console.log(attrs);' . PHP_EOL;
-        $data .= '  var text=attrs.text?attrs.text:target;' . PHP_EOL;
-        $data .= '  target="' . DOKU_BASE . 'doku.php?id="+target;' . PHP_EOL;
-        $data .= '    return self.createInline(parent, "anchor", text, {type: "link", target: target})' . PHP_EOL;
-        $data .= '  })' . PHP_EOL;
-        $data .= '})' . PHP_EOL;
-        $data .= 'registry.inlineMacro("Wikimedia", function () {' . PHP_EOL;
-        $data .= '  var self = this' . PHP_EOL;
-        $data .= '  self.positionalAttributes("text");' . PHP_EOL;
-        $data .= '  self.parseContentAs("raw");' . PHP_EOL;
-        $data .= '  self.process(function (parent, target, attrs) {console.log(attrs);' . PHP_EOL;
-        $data .= '  var text=attrs.text?attrs.text:target;' . PHP_EOL;
-        $data .= '  target="' . DOKU_BASE . 'lib/exe/fetch.php?media="+target;' . PHP_EOL;
-        $data .= '    return self.createInline(parent, "anchor", text, {type: "link", target: target})' . PHP_EOL;
-        $data .= '  })' . PHP_EOL;
-        $data .= '})' . PHP_EOL;
-        $data .= 'var params = ' . json_encode($params) . ';' . PHP_EOL;
-        $data .= 'params.extension_registry=registry;' . PHP_EOL;
-        $data .= 'for (let i = 0; i < asciidocs.length; i++) {' . PHP_EOL;
-        $data .= 'var json = document.getElementById(asciidocs[i]["SID"]).textContent;' . PHP_EOL;
-        $data .= 'var target = document.getElementById(asciidocs[i]["DID"]);' . PHP_EOL;
-        $data .= 'var doc = JSON.parse(json);' . PHP_EOL;
-        $data .= 'var html = asciidoctor.convert(doc.text,params);' . PHP_EOL;
-        $data .= 'target.innerHTML = html;}});' . PHP_EOL;
+        $data .= '<script type="module">'. PHP_EOL;
+        $data .= 'var extensions=' . json_encode($this->getExtensions()) . ';' . PHP_EOL;
+        $data .= 'var params = '.json_encode($this->getParams()).';' . PHP_EOL;
+        $data .= file_get_contents(DOKU_PLUGIN.'asciidocjs/asciidocinc.js'); 
         $data .= '</script>' . PHP_EOL;
         return $data;
     }
@@ -275,46 +241,4 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
     }
 }
 
-// @codingStandardsIgnoreLine
-class syntax_plugin_asciidocjs extends SyntaxPlugin_asciidocjs_base
-{
-   /**
-    * Connect lookup pattern to lexer.
-    *
-    * @param $aMode String The desired rendermode.
-    * @return none
-    * @public
-    * @see render()
-    */
-    public function connectTo($mode)
-    {
-        $this->Lexer->addEntryPattern('^//#--asciidoc--#//', $mode, 'plugin_asciidocjs');
-    }
 
-    public function postConnect()
-    {
-          $this->Lexer->addExitPattern('^\b$', 'plugin_asciidocjs');
-    }
-}
-
-// @codingStandardsIgnoreLine
-class syntax_plugin_asciidocjsblk extends SyntaxPlugin_asciidocjs_base
-{
-   /**
-    * Connect lookup pattern to lexer.
-    *
-    * @param $aMode String The desired rendermode.
-    * @return none
-    * @public
-    * @see render()
-    */
-    public function connectTo($mode)
-    {
-        $this->Lexer->addEntryPattern('<asciidoc>', $mode, 'plugin_asciidocjsblk');
-    }
-
-    public function postConnect()
-    {
-          $this->Lexer->addExitPattern('</asciidoc>', 'plugin_asciidocjsblk');
-    }
-}
