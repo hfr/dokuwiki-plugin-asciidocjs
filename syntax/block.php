@@ -9,6 +9,7 @@
  * @author     Rüdiger Kessel  <ruediger.kessel@gmail.com>
  */
 
+// @codingStandardsIgnoreLine
 include_once 'base.php';
 
 class syntax_plugin_asciidocjs_block extends SyntaxPlugin_asciidocjs_base

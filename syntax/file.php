@@ -9,6 +9,7 @@
  * @author     Rüdiger Kessel  <ruediger.kessel@gmail.com>
  */
 
+// @codingStandardsIgnoreLine
 include_once 'base.php';
 
 
