@@ -3,5 +3,5 @@ author Rüdiger Kessel
 email  ruediger.kessel@gmail.com
 date   2023-09-23
 name   asciidocjs plugin
-desc   Us asciidoc in Dokuwiki
+desc   Use asciidoc in Dokuwiki
 url    https://www.dokuwiki.org/plugin:asciidocjs

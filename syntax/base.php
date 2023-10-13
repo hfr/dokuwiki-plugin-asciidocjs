@@ -57,7 +57,8 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
     * </p>
     * @param $aNode String Path to the node.js exe.
     * @param $aAscdoc String The asciidoc text to convert.
-    * @param $aSave_mode String AsciiDoctor save mode for the conversion.
+    * @param $extensions array List of extensions.
+    * @param $params array Conversion parameters.
     */
     public function runAsciidoctor($node, $ascdoc, $extensions, $params)
     {
@@ -108,7 +109,7 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
     }
     public function getParams()
     {
-        $params = array("safe" => $this->getConf('save_mode'),
+        $params = array("safe" => $this->getConf('safe_mode'),
                         "header_footer" => false,
                         "attributes" => array(
                             "DOKUWIKI_BASE" => DOKU_BASE,
