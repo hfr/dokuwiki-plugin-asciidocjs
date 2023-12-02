@@ -10,7 +10,7 @@
  */
 
 // phpcs:disable
-include_once 'base.php';
+include_once __DIR__ . '/base.php';
 // phpcs:enable
 
 class syntax_plugin_asciidocjs_block extends SyntaxPlugin_asciidocjs_base
