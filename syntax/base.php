@@ -105,17 +105,11 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
     }
     public function getExtensions()
     {
-        return array("kroki" => $this->getConf('use_kroki'));
+        return ["kroki" => $this->getConf('use_kroki')];
     }
     public function getParams()
     {
-        $params = array("safe" => $this->getConf('safe_mode'),
-                        "header_footer" => false,
-                        "attributes" => array(
-                            "DOKUWIKI_BASE" => DOKU_BASE,
-                            "DOKUWIKI_URL" => DOKU_URL
-                            )
-                       );
+        $params = ["safe" => $this->getConf('safe_mode'), "header_footer" => false, "attributes" => ["DOKUWIKI_BASE" => DOKU_BASE, "DOKUWIKI_URL" => DOKU_URL]];
         if ($this->getExtensions()["kroki"]) {
             if ($this->getConf('kroki_server') != '') {
                 $params["attributes"]["kroki-server-url"] = $this->getConf('kroki_server');
@@ -174,6 +168,7 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
                 }
                 return [$state, $data, ''];
             case DOKU_LEXER_MATCHED:
+            case DOKU_LEXER_SPECIAL:
                 break;
             case DOKU_LEXER_UNMATCHED:
                 $data = '';
@@ -198,8 +193,6 @@ class SyntaxPlugin_asciidocjs_base extends SyntaxPlugin
                 return [$state, $data, $match];
             case DOKU_LEXER_EXIT:
                 return [$state, '', ''];
-            case DOKU_LEXER_SPECIAL:
-                break;
         }
         return [];
     }

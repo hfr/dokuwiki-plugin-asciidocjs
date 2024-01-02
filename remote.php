@@ -1,9 +1,10 @@
 <?php
 
 //use dokuwiki\Extension\AdminPlugin;
+use dokuwiki\Extension\RemotePlugin;
 use dokuwiki\Remote\RemoteException;
 
-class remote_plugin_asciidocjs extends DokuWiki_Remote_Plugin
+class remote_plugin_asciidocjs extends RemotePlugin
 {
     /**
      * Returns details about the remote plugin methods
